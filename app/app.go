@@ -1218,13 +1218,13 @@ func (app *App) PartitionOracleVoteTxs(ctx sdk.Context, txs [][]byte) (oracleVot
 func (app *App) BuildDependenciesAndRunTxs(ctx sdk.Context, txs [][]byte) ([]*abci.ExecTxResult, sdk.Context) {
 	var txResults []*abci.ExecTxResult
 
-	dependencyDag, err := app.AccessControlKeeper.BuildDependencyDag(ctx, app.txDecoder, app.GetAnteDepGenerator(), txs)
+	_, err := app.AccessControlKeeper.BuildDependencyDag(ctx, app.txDecoder, app.GetAnteDepGenerator(), txs)
 
 	switch err {
 	case nil:
 		// Start with a fresh state for the MemCache
 		ctx = ctx.WithContextMemCache(sdk.NewContextMemCache())
-		txResults, ctx = app.ProcessTxs(ctx, txs, dependencyDag, app.ProcessBlockConcurrent)
+		txResults = app.ProcessBlockSynchronous(ctx, txs)
 	case acltypes.ErrGovMsgInBlock:
 		ctx.Logger().Info(fmt.Sprintf("Gov msg found while building DAG, processing synchronously: %s", err))
 		txResults = app.ProcessBlockSynchronous(ctx, txs)
