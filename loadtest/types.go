@@ -13,7 +13,6 @@ import (
 
 const (
 	Bank                 string = "bank"
-	CollectRewards                 string = "collect_rewards"
 	FailureBankMalformed string = "failure_bank_malformed"
 	FailureBankInvalid   string = "failure_bank_invalid"
 	FailureDexMalformed  string = "failure_dex_malformed"
