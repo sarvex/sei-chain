@@ -69,7 +69,9 @@ def main():
     # fetch validator address if not provided
     if not VAL_ADDR:
         VAL_ADDR = subprocess.check_output(
-            [CMD_TMPL.format(password=PASSWORD) + f" keys show {KEY} --bech val | grep address | cut -d':' -f2 | xargs"],
+            [
+                f"{CMD_TMPL.format(password=PASSWORD)} keys show {KEY} --bech val | grep address | cut -d':' -f2 | xargs"
+            ],
             stderr=subprocess.STDOUT,
             shell=True,
         ).decode()[:-1]

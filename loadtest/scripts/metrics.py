@@ -12,8 +12,7 @@ def get_block_height(tx_hash_str):
     body = res.json()
     if "height" not in body:
         return
-    height = int(body["height"])
-    return height
+    return int(body["height"])
 
 def get_all_heights():
     seen_heights = set([])
@@ -69,7 +68,7 @@ def get_transaction_breakdown(height):
 
 
         # Attributes may not be defined for custom module
-        if module == None:
+        if module is None:
             module = "other"
         if module not in tx_mapping:
             tx_mapping[module] = 1
@@ -82,21 +81,19 @@ def get_metrics():
     if len(all_heights) <= 2:
         print("Not enough number of blocks to obtain meaningful metrics with. Exiting..")
         return
-    block_info_list = []
-    for height in all_heights:
-        block_info_list.append(get_block_info(height))
+    block_info_list = [get_block_info(height) for height in all_heights]
     # Skip first and last block since it may have high deviation if we start it at the end of the block
 
     skip_edge_blocks = block_info_list[1:-1]
     total_duration = skip_edge_blocks[-1]["timestamp"] - skip_edge_blocks[0]["timestamp"]
     average_block_time = total_duration.total_seconds() / (len(skip_edge_blocks) - 1)
-    total_txs_num = sum([block["number_of_txs"] for block in skip_edge_blocks])
+    total_txs_num = sum(block["number_of_txs"] for block in skip_edge_blocks)
     average_txs_num = total_txs_num / len(skip_edge_blocks)
 
     # Best block stats:
     max_throughput, max_block_height, max_block_time = -1, -1, -1
-    for i in range(len(block_info_list)):
-        block = block_info_list[i]
+    for blockinfo in block_info_list:
+        block = blockinfo
         next_block_time = get_block_time(block["height"] + 1)
         block_time = (next_block_time - block["timestamp"]) // timedelta(milliseconds=1)
         throughput = block["number_of_txs"] / block_time

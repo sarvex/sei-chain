@@ -31,7 +31,9 @@ class PriceFeeder:
 
     def init_val_addr(self):
         self.val_addr = subprocess.check_output(
-            [CMD.format(password=self.password, binary=self.binary) + f" keys show {self.key} --bech=val | grep address | cut -d':' -f2 | xargs"],
+            [
+                f"{CMD.format(password=self.password, binary=self.binary)} keys show {self.key} --bech=val | grep address | cut -d':' -f2 | xargs"
+            ],
             stderr=subprocess.STDOUT,
             shell=True,
         ).decode()[:-1]
@@ -58,7 +60,7 @@ class PriceFeeder:
             shell=True,
         )
 
-        if re.search("code: \d{1,2}", result.decode("utf-8")).group(0) != "code: 0":
+        if re.search("code: \d{1,2}", result.decode("utf-8"))[0] != "code: 0":
             print("Err: ", result)
             print("Oracle price didn't submit successfully!!")
 
@@ -88,7 +90,12 @@ def main():
     parser.add_argument("password", help='The keychain password', type=str)
     parser.add_argument('chain_id', help='Chain id', type=str)
     parser.add_argument('coins', help='The coins to use', type=str)
-    parser.add_argument('--binary', help='Your seid binary path', type=str, default=str(Path.home()) + '/go/bin/seid')
+    parser.add_argument(
+        '--binary',
+        help='Your seid binary path',
+        type=str,
+        default=f'{str(Path.home())}/go/bin/seid',
+    )
     parser.add_argument('--node', help='The node to contact', type=str, default='http://localhost:26657')
     parser.add_argument('--interval', help='How long time to sleep between price checks', type=int, default=5)
     parser.add_argument('--vote-period', help='how many blocks is the vote period', type=int, default=10)

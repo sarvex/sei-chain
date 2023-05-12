@@ -56,7 +56,7 @@ def create_genesis_account(account_index, account_name, local=False):
     retry_counter = 0
     sleep_time = 1
 
-    while True and retry_counter < 1000:
+    while retry_counter < 1000:
         try:
             print(f'Running: ${add_account_cmd}')
             subprocess.call(
@@ -114,18 +114,18 @@ def write_genesis_file(genesis_json_file_path, data):
 def main():
     args = sys.argv[1:]
     number_of_accounts = int(args[0])
-    is_local = False
-    if len(args) > 1 and args[1] == "loc":
-        is_local = True
-
+    is_local = len(args) > 1 and args[1] == "loc"
     genesis_json_file_path = f"{home_path}/.sei/config/genesis.json"
     genesis_file = read_genesis_file(genesis_json_file_path)
 
     num_threads = max(1, number_of_accounts // PARALLEISM)
-    threads = []
-    for i in range(0, number_of_accounts, num_threads):
-        threads.append(threading.Thread(target=bulk_create_genesis_accounts, args=(num_threads, i, is_local)))
-
+    threads = [
+        threading.Thread(
+            target=bulk_create_genesis_accounts,
+            args=(num_threads, i, is_local),
+        )
+        for i in range(0, number_of_accounts, num_threads)
+    ]
     print("Starting threads account")
     for t in threads:
         t.start()

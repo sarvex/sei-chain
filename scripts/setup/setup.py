@@ -55,8 +55,7 @@ def run_with_password(command, password):
 
 def get_git_root_dir():
     """Get the root directory of the git repository."""
-    git_root_dir = run_command('git rev-parse --show-toplevel')
-    return git_root_dir
+    return run_command('git rev-parse --show-toplevel')
 
 
 def set_git_root_as_current_working_dir():
